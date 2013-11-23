@@ -56,4 +56,40 @@ class StatHatEzTest extends \PHPUnit_Framework_TestCase
         $this->statHat->value('mock stat', 100);
         $this->assertCount(2, $this->statHat->getBuffer());
     }
+
+    public function testPostBatchWhenEmpty()
+    {
+        $params = array('ezkey' => self::MOCK_EZKEY, 'data' => array());
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('post')
+            ->with('/ez', $this->equalTo($params))
+            ->will($this->returnValue(true))
+        ;
+
+        $this->statHat->postBatch();
+    }
+
+    public function testPostBatchWithStats()
+    {
+        $this->statHat->count('mock stat count', 1, 1362772440);
+        $this->statHat->value('mock stat avg', 1, 1362772440);
+        $params = array(
+            'ezkey' => self::MOCK_EZKEY,
+            'data' => array(
+                array('stat' => 'mock stat count', 'count' => 1, 't' => 1362772440),
+                array('stat' => 'mock stat avg', 'value' => 1, 't' => 1362772440)
+            )
+        );
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('post')
+            ->with('/ez', $this->equalTo($params))
+            ->will($this->returnValue(true))
+        ;
+
+        $this->statHat->postBatch();
+    }
 }
