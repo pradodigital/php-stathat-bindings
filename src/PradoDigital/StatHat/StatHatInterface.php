@@ -34,7 +34,7 @@ interface StatHatInterface
      * Updates a value tracker.
      *
      * @param string $stat   The unique stat name
-     * @param int $count     The value to track
+     * @param int $value     The value to track
      * @param int $timestamp Optional timestamp, defaults to time()
      *
      * @return StatHatInterface
