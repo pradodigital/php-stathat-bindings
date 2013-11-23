@@ -1,0 +1,6 @@
+vendor/*
+build/*
+tests/sandbox.php
+composer.phar
+bin/*
+phpunit.xml

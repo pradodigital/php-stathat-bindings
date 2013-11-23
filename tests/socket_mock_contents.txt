@@ -1,0 +1,8 @@
+POST / HTTP/1.1
+Host: api.stathat.com
+User-Agent: PHP StatHat Bindings/1.x (+https://github.com/pradodigital/php-stathat-bindings)
+Content-Type: application/json
+Content-Length: 15
+Connection: Close
+
+{"key":"value"}

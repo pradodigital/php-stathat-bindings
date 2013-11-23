@@ -1,2 +1,2 @@
-php-stathat-bindings
+PHP StatHat Bindings
 ====================
