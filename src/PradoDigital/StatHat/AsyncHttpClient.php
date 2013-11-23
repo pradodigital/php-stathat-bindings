@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PHP StatHat Bindings package.
  *
  * (c) Jose Prado <cowlby@me.com>
@@ -19,10 +19,15 @@ namespace PradoDigital\StatHat;
 class AsyncHttpClient implements HttpClientInterface
 {
     /**
-     * Asynchronous POST request by closing the conneciton immediatelly after
+     * Asynchronous POST request by closing the conneciton immediately after
      * sending.
      *
      * {@inheritdoc}
+     *
+     * @param string $path  The path to POST to
+     * @param array $params The parameters to POST
+     *
+     * @return boolean Whether or not the request was succesful
      */
     public function post($path, array $params)
     {

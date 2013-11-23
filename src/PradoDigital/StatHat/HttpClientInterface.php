@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PHP StatHat Bindings package.
  *
  * (c) Jose Prado <cowlby@me.com>
@@ -25,7 +25,7 @@ interface HttpClientInterface
     /**
      * POSTs an array of parameters to the StatHat API.
      *
-     * @param string $path The path to POST to
+     * @param string $path  The path to POST to
      * @param array $params The parameters to POST
      *
      * @return boolean Whether or not the request was succesful

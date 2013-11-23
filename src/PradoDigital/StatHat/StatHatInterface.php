@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PHP StatHat Bindings package.
  *
  * (c) Jose Prado <cowlby@me.com>

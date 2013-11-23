@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PHP StatHat Bindings package.
  *
  * (c) Jose Prado <cowlby@me.com>
@@ -20,16 +20,22 @@ namespace PradoDigital\StatHat;
 class StatHatEZ implements StatHatInterface
 {
     /**
+     * The internal buffer of stats.
+     *
      * @var array
      */
     private $buffer;
 
     /**
+     * The internal HttpClientInterface used to POST
+     *
      * @var HttpClientInterface
      */
     private $client;
 
     /**
+     * The internal EZ key used for POSTing
+     *
      * @var string
      */
     private $ezKey;
@@ -49,7 +55,13 @@ class StatHatEZ implements StatHatInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Queues an update to a counter stat.
+     *
+     * @param string $stat   The unique stat name
+     * @param int $count     The number to count
+     * @param int $timestamp Optional timestamp, defaults to time()
+     *
+     * @return StatHatInterface
      */
     public function count($stat, $count, $timestamp = null)
     {
@@ -59,7 +71,13 @@ class StatHatEZ implements StatHatInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Queues an update to a value tracker.
+     *
+     * @param string $stat   The unique stat name
+     * @param int $value     The value to track
+     * @param int $timestamp Optional timestamp, defaults to time()
+     *
+     * @return StatHatInterface
      */
     public function value($stat, $value, $timestamp = null)
     {
