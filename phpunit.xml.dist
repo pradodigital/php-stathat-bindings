@@ -11,6 +11,11 @@
          syntaxCheck="false"
          bootstrap="./tests/bootstrap.php"
 >
+
+    <logging>
+          <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
+    
     <testsuites>
         <testsuite name="PHP StatHat Bindings Test Suite">
             <directory>./tests/PradoDigital/Tests/StatHat</directory>
