@@ -93,8 +93,19 @@ class StatHatEZ implements StatHatInterface
      */
     public function postBatch()
     {
-        $params = array('ezkey' => $this->getEzKey(), 'data' => $this->getBuffer());
-        return $this->getClient()->post('/ez', $params);
+        if ($this->hasStats()) {
+
+            $params = array(
+                'ezkey' => $this->getEzKey(),
+                'data' => $this->getBuffer()
+            );
+
+            $isPosted = $this->getClient()->post('/ez', $params);
+
+            if ($isPosted) {
+                $this->clearBuffer();
+            }
+        }
     }
 
     /**
@@ -153,5 +164,27 @@ class StatHatEZ implements StatHatInterface
     public function getBuffer()
     {
         return $this->buffer;
+    }
+
+    /**
+     * Empties the buffer.
+     *
+     * @return \PradoDigital\StatHat\StatHatEZ
+     */
+    private function clearBuffer()
+    {
+        $this->buffer = array();
+
+        return $this;
+    }
+
+    /**
+     * Checks whether or not there are stats to send.
+     *
+     * @return boolean
+     */
+    private function hasStats()
+    {
+        return count($this->buffer) > 0;
     }
 }

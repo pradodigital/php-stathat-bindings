@@ -59,13 +59,11 @@ class StatHatEzTest extends \PHPUnit_Framework_TestCase
 
     public function testPostBatchWhenEmpty()
     {
-        $params = array('ezkey' => self::MOCK_EZKEY, 'data' => array());
+        $this->assertEmpty($this->statHat->getBuffer());
 
         $this->mockClient
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('post')
-            ->with('/ez', $this->equalTo($params))
-            ->will($this->returnValue(true))
         ;
 
         $this->statHat->postBatch();
@@ -91,5 +89,39 @@ class StatHatEzTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->statHat->postBatch();
+    }
+
+    public function testPostBatchClearsBufferWhenSuccessful()
+    {
+        $this->statHat->count('mock stat count', 1, 1362772440);
+        $this->statHat->value('mock stat avg', 1, 1362772440);
+        $this->assertCount(2, $this->statHat->getBuffer());
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('post')
+            ->will($this->returnValue(true))
+        ;
+
+        $this->statHat->postBatch();
+
+        $this->assertCount(0, $this->statHat->getBuffer());
+    }
+
+    public function testPostBatchKeepsBufferOnFailure()
+    {
+        $this->statHat->count('mock stat count', 1, 1362772440);
+        $this->statHat->value('mock stat avg', 1, 1362772440);
+        $this->assertCount(2, $this->statHat->getBuffer());
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('post')
+            ->will($this->returnValue(false))
+        ;
+
+        $this->statHat->postBatch();
+
+        $this->assertCount(2, $this->statHat->getBuffer());
     }
 }
