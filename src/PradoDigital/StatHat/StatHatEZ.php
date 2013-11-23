@@ -51,9 +51,9 @@ class StatHatEZ implements StatHatInterface
     /**
      * {@inheritdoc}
      */
-    public function count($stat, $count, $t = null)
+    public function count($stat, $count, $timestamp = null)
     {
-        $this->buffer[] = array('stat' => $stat, 'count' => $count, 't' => $t ?: time());
+        $this->buffer[] = array('stat' => $stat, 'count' => $count, 't' => $timestamp ?: time());
 
         return $this;
     }
@@ -61,9 +61,9 @@ class StatHatEZ implements StatHatInterface
     /**
      * {@inheritdoc}
      */
-    public function value($stat, $value, $t = null)
+    public function value($stat, $value, $timestamp = null)
     {
-        $this->buffer[] = array('stat' => $stat, 'value' => $value, 't' => $t ?: time());
+        $this->buffer[] = array('stat' => $stat, 'value' => $value, 't' => $timestamp ?: time());
 
         return $this;
     }

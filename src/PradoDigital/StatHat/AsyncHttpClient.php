@@ -36,8 +36,8 @@ class AsyncHttpClient implements HttpClientInterface
         $request .= "Connection: Close\r\n\r\n";
         $request .= $json;
 
-        $fp = fsockopen('ssl://'.HttpClientInterface::STATHAT_HOST, HttpClientInterface::STATHAT_PORT);
-        fwrite($fp, $request);
-        return fclose($fp);
+        $socket = fsockopen('ssl://'.HttpClientInterface::STATHAT_HOST, HttpClientInterface::STATHAT_PORT);
+        fwrite($socket, $request);
+        return fclose($socket);
     }
 }
