@@ -17,7 +17,7 @@ class StatHatEzTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->mockClient = $this->getMock('PradoDigital\StatHat\HttpClientInterface', array('post'));
-        $this->statHat = new StatHatEZ(self::MOCK_EZKEY, $this->mockClient);
+        $this->statHat = new StatHatEZ($this->mockClient, self::MOCK_EZKEY);
     }
 
     /**

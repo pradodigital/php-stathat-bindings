@@ -25,25 +25,25 @@ class StatHatEZ implements StatHatInterface
     private $buffer;
 
     /**
-     * @var string
-     */
-    private $ezKey;
-
-    /**
      * @var HttpClientInterface
      */
     private $client;
+
+    /**
+     * @var string
+     */
+    private $ezKey;
 
     /**
      * Constructor.
      *
      * @param string $ezKey The EZ Key to use for posting
      */
-    public function __construct($ezKey, HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, $ezKey)
     {
         $this->buffer = array();
-        $this->setEzKey($ezKey);
         $this->setClient($client);
+        $this->setEzKey($ezKey);
 
         register_shutdown_function(array($this, 'postBatch'));
     }
@@ -80,30 +80,6 @@ class StatHatEZ implements StatHatInterface
     }
 
     /**
-     * Set the EZ Key.
-     *
-     * @param string $ezKey The EZ Key to use for posting
-     *
-     * @return StatHatInterface
-     */
-    public function setEzKey($ezKey)
-    {
-        $this->ezKey = $ezKey;
-
-        return $this;
-    }
-
-    /**
-     * Gets the EZ Key.
-     *
-     * @return string The stored EZ Key
-     */
-    public function getEzKey()
-    {
-        return $this->ezKey;
-    }
-
-    /**
      * Set the HTTP client.
      *
      * @param string $client The HTTP client to use
@@ -125,6 +101,30 @@ class StatHatEZ implements StatHatInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Set the EZ Key.
+     *
+     * @param string $ezKey The EZ Key to use for posting
+     *
+     * @return StatHatInterface
+     */
+    public function setEzKey($ezKey)
+    {
+        $this->ezKey = $ezKey;
+
+        return $this;
+    }
+
+    /**
+     * Gets the EZ Key.
+     *
+     * @return string The stored EZ Key
+     */
+    public function getEzKey()
+    {
+        return $this->ezKey;
     }
 
     /**
