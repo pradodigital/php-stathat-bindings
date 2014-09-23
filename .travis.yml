@@ -1,7 +1,6 @@
 language: php
 
 php:
-    - 5.3
     - 5.4
     - 5.5
 
@@ -16,10 +15,6 @@ before_script:
 
 script:
     - php vendor/bin/phpunit -c phpunit.xml.dist
-    - php vendor/bin/phpcs -n --standard=PSR2 --extensions=php --ignore=*/vendor/* .
-    - php vendor/bin/phpmd  --suffixes php --exclude vendor . text codesize,naming,controversial,design
-    - php vendor/bin/phpcpd --exclude vendor --exclude tests .
-    - php vendor/bin/pdepend --ignore=vendor,tests --summary-xml=build/logs/summary.xml --jdepend-chart=build/logs/jdepend.svg --overview-pyramid=build/logs/pyramid.svg .
 
 after_script:
     - php vendor/bin/coveralls -v

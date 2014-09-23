@@ -11,15 +11,13 @@
 
 namespace PradoDigital\StatHat;
 
-use GuzzleHttp\ClientInterface;
-
 /**
- * StatHatEZ updates stats via the EZ API. It buffers messages internally and
+ * StatHatClassic updates stats via the Classic API. It buffers messages internally and
  * sends them all by registering a shutdown function.
  *
  * @author Jose Prado <cowlby@me.com>
  */
-class StatHatEZ implements StatHatInterface
+class StatHatClassic implements StatHatInterface
 {
     /**
      * The internal buffer of stats.
@@ -29,29 +27,30 @@ class StatHatEZ implements StatHatInterface
     private $buffer;
 
     /**
-     * The internal ClientInterface used to POST
+     * The internal HttpClientInterface used to POST
      *
-     * @var ClientInterface
+     * @var HttpClientInterface
      */
     private $client;
 
     /**
-     * The internal EZ key used for POSTing
+     * The internal user key used for POSTing
      *
      * @var string
      */
-    private $ezKey;
+    private $userKey;
 
     /**
      * Constructor.
      *
-     * @param string $ezKey The EZ Key to use for posting
+     * @param HttpClientInterface $client An HttpClientInterface instance
+     * @param string $userKey The User Key to use for posting
      */
-    public function __construct(ClientInterface $client, $ezKey)
+    public function __construct(HttpClientInterface $client, $userKey)
     {
-        $this->buffer = [];
+        $this->buffer = ['counters' => [], 'values' => []];
         $this->client = $client;
-        $this->ezKey = $ezKey;
+        $this->userKey = $userKey;
 
         register_shutdown_function([$this, 'postBatch']);
     }
@@ -59,15 +58,20 @@ class StatHatEZ implements StatHatInterface
     /**
      * Queues an update to a counter stat.
      *
-     * @param string $stat   The unique stat name
+     * @param string $stat   The unique stat key
      * @param int $count     The number to count
      * @param int $timestamp Optional timestamp, defaults to time()
      *
      * @return StatHatInterface
      */
-    public function count($stat, $count, $timestamp = null)
+    public function count($stat, $count = 1, $timestamp = null)
     {
-        $this->buffer[] = ['stat' => $stat, 'count' => $count, 't' => $timestamp ?: time()];
+        $this->buffer['counters'][] = [
+            'key' => $stat,
+            'ukey' => $this->userKey,
+            'count' => $count,
+            't' => $timestamp ?: time()
+        ];
 
         return $this;
     }
@@ -75,7 +79,7 @@ class StatHatEZ implements StatHatInterface
     /**
      * Queues an update to a value tracker.
      *
-     * @param string $stat   The unique stat name
+     * @param string $stat   The unique stat key
      * @param int $value     The value to track
      * @param int $timestamp Optional timestamp, defaults to time()
      *
@@ -83,7 +87,12 @@ class StatHatEZ implements StatHatInterface
      */
     public function value($stat, $value, $timestamp = null)
     {
-        $this->buffer[] = ['stat' => $stat, 'value' => $value, 't' => $timestamp ?: time()];
+        $this->buffer['values'][] = [
+            'key' => $stat,
+            'ukey' => $this->userKey,
+            'value' => $value,
+            't' => $timestamp ?: time()
+        ];
 
         return $this;
     }
@@ -97,31 +106,24 @@ class StatHatEZ implements StatHatInterface
     {
         if ($this->hasStats()) {
 
-            $response = $this->client->post('https://api.stathat.com/ez', [
-                'json' => [
-                    'ezkey' => $this->ezKey,
-                    'data' => $this->buffer
-                ]
-            ]);
-
-            print_r($response->getEffectiveUrl());
-            print_r($response->getStatusCode());
-            print_r($response->getReasonPhrase());
-            print_r($response->getHeaders());
-
-            if ($response->getStatusCode() === '200') {
-                echo 'successful';
-                $this->clearBuffer();
+            foreach ($this->buffer['counters'] as $params) {
+                $this->client->post('/c', $params);
             }
+
+            foreach ($this->buffer['values'] as $params) {
+                $this->client->post('/v', $params);
+            }
+
+            $this->clearBuffer();
         }
     }
 
     /**
      * Empties the buffer.
      *
-     * @return \PradoDigital\StatHat\StatHatEZ
+     * @return \PradoDigital\StatHat\StatHatClassic
      */
-    public function clearBuffer()
+    private function clearBuffer()
     {
         $this->buffer = [];
 
@@ -133,8 +135,8 @@ class StatHatEZ implements StatHatInterface
      *
      * @return boolean
      */
-    public function hasStats()
+    private function hasStats()
     {
-        return count($this->buffer) > 0;
+        return count($this->buffer['counters']) > 0 || count($this->buffer['values'] > 0);
     }
 }

@@ -22,18 +22,18 @@ interface StatHatInterface
     /**
      * Updates a counter stat.
      *
-     * @param string $stat   The unique stat name
-     * @param int $count     The number to count
+     * @param string $stat   The unique stat name or key
+     * @param int $count     The number to count, defaults to 1
      * @param int $timestamp Optional timestamp, defaults to time()
      *
      * @return StatHatInterface
      */
-    public function count($stat, $count, $timestamp = null);
+    public function count($stat, $count = 1, $timestamp = null);
 
     /**
      * Updates a value tracker.
      *
-     * @param string $stat   The unique stat name
+     * @param string $stat   The unique stat name or key
      * @param int $value     The value to track
      * @param int $timestamp Optional timestamp, defaults to time()
      *

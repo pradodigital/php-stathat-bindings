@@ -1,6 +1,21 @@
-vendor/*
-build/*
-tests/sandbox.php
-composer.phar
-bin/*
+# Composer
+/vendor/
+/composer.phar
+
+# Zend Studio
+/.project
+/.settings
+/.buildpath
+
+# Silex
+/var/cache
+/var/logs
+
+# Configuration files
+/web/.htaccess
+
+# Tests
 phpunit.xml
+bin/*
+tests/sandbox.php
+build/*

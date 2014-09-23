@@ -29,20 +29,48 @@ class AsyncHttpClient implements HttpClientInterface
      *
      * @return boolean Whether or not the request was succesful
      */
-    public function post($path, array $params)
+    public function post($path, array $params, $contentType = HttpClientInterface::DEFAULT_CONTENT_TYPE)
     {
-        $json = json_encode($params);
+        if (!in_array($contentType, ['application/json', 'application/x-www-form-urlencoded'])) {
+            throw new \RuntimeException('Invalid Content-Type set in HTTP Client.');
+        }
+
+        $body = $this->encodeParams($params, $contentType);
 
         $request  = "POST ".$path." HTTP/1.1\r\n";
         $request .= "Host: ".HttpClientInterface::STATHAT_HOST."\r\n";
         $request .= "User-Agent: ".HttpClientInterface::USER_AGENT."\r\n";
-        $request .= "Content-Type: application/json\r\n";
-        $request .= "Content-Length: ".strlen($json)."\r\n";
+        $request .= "Content-Type: ".$contentType."\r\n";
+        $request .= "Content-Length: ".strlen($body)."\r\n";
         $request .= "Connection: Close\r\n\r\n";
-        $request .= $json;
+        $request .= $body;
 
         $socket = fsockopen('ssl://'.HttpClientInterface::STATHAT_HOST, HttpClientInterface::STATHAT_PORT);
         fwrite($socket, $request);
         return fclose($socket);
+    }
+
+    /**
+     * Encodes the parameters into the right format based on the content type.
+     *
+     * @param array $params
+     * @param string $contentType
+     *
+     * @return string
+     */
+    private function encodeParams($params, $contentType)
+    {
+        switch ($contentType) {
+
+            case 'application/json':
+                $encodedParams = json_encode($params);
+                break;
+
+            default:
+                $encodedParams = http_build_query($params);
+                break;
+        }
+
+        return $encodedParams;
     }
 }

@@ -21,6 +21,7 @@ interface HttpClientInterface
     const STATHAT_HOST = 'api.stathat.com';
     const STATHAT_PORT = 443;
     const USER_AGENT = 'PHP StatHat Bindings/1.x (+https://github.com/pradodigital/php-stathat-bindings)';
+    const DEFAULT_CONTENT_TYPE = 'application/x-www-form-urlencoded';
 
     /**
      * POSTs an array of parameters to the StatHat API.
@@ -30,5 +31,5 @@ interface HttpClientInterface
      *
      * @return boolean Whether or not the request was succesful
      */
-    public function post($path, array $params);
+    public function post($path, array $params, $contentType = self::DEFAULT_CONTENT_TYPE);
 }
