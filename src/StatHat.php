@@ -78,8 +78,13 @@ class StatHat implements StatHatEzInterface, StatHatJsonInterface
      */
     public function getStatList()
     {
-        $url = sprintf('https://www.stathat.com/x/%s/statlist', $this->accessToken);
-        $response = $this->client->get($url);
+        $url = ['https://www.stathat.com/x/{accessToken}/statlist', [
+            'accessToken' => $this->accessToken
+        ]];
+
+        $request = $this->client->createRequest('GET', $url);
+        $response = $this->client->send($request);
+
         return $response->json();
     }
 
@@ -88,8 +93,35 @@ class StatHat implements StatHatEzInterface, StatHatJsonInterface
      */
     public function getStat($name)
     {
-        $url = sprintf('https://www.stathat.com/x/%s/stat', $this->accessToken);
-        $response = $this->client->get($url, ['query' => ['name' => $name]]);
+        $url = ['https://www.stathat.com/x/{accessToken}/stat', [
+            'accessToken' => $this->accessToken
+        ]];
+
+        $request = $this->client->createRequest('GET', $url, [
+            'query' => ['name' => $name]
+        ]);
+
+        $response = $this->client->send($request);
+
+        return $response->json();
+    }
+
+    /**
+     * @see \PradoDigital\StatHat\StatHatJsonInterface::getDatasets()
+     */
+    public function getDatasets($statId, $timeframe, $start = null)
+    {
+        $url = ['https://www.stathat.com/x/{accessToken}/data/{statId}', [
+            'accessToken' => $this->accessToken,
+            'statId' => $statId
+        ]];
+
+        $request = $this->client->createRequest('GET', $url, [
+            'query' => ['t' => $timeframe, 'start' => $start]
+        ]);
+
+        $response = $this->client->send($request);
+
         return $response->json();
     }
 

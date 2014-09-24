@@ -41,4 +41,13 @@ interface StatHatJsonInterface
      * @return array
      */
     public function getStat($name);
+
+    /**
+     * Retrieves the datasets for the specified stat ID and time intervals.
+     *
+     * @param string $statId    The stat ID
+     * @param string $timeframe The timeframe to use to pull stats
+     * @param int    $start     Optional start time
+     */
+    public function getDatasets($statId, $timeframe, $start = null);
 }
