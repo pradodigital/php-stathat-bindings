@@ -16,6 +16,5 @@
 
 # Tests
 phpunit.xml
-bin/*
-tests/sandbox.php
+/tests/sandbox.php
 build/*

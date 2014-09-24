@@ -15,16 +15,16 @@
     <logging>
           <log type="coverage-clover" target="build/logs/clover.xml"/>
     </logging>
-    
+
     <testsuites>
         <testsuite name="PHP StatHat Bindings Test Suite">
-            <directory>./tests/PradoDigital/Tests/StatHat</directory>
+            <directory>./tests/StatHat</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./src/PradoDigital/StatHat</directory>
+            <directory>./src</directory>
         </whitelist>
     </filter>
 </phpunit>
