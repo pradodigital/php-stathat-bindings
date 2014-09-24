@@ -17,7 +17,7 @@ namespace PradoDigital\StatHat;
  *
  * @author Jose Prado <cowlby@me.com>
  */
-class StatHatClassic implements StatHatInterface
+class StatHatClassic implements StatHatApiInterface
 {
     /**
      * The internal buffer of stats.
@@ -62,7 +62,7 @@ class StatHatClassic implements StatHatInterface
      * @param int $count     The number to count
      * @param int $timestamp Optional timestamp, defaults to time()
      *
-     * @return StatHatInterface
+     * @return StatHatApiInterface
      */
     public function count($stat, $count = 1, $timestamp = null)
     {
@@ -83,7 +83,7 @@ class StatHatClassic implements StatHatInterface
      * @param int $value     The value to track
      * @param int $timestamp Optional timestamp, defaults to time()
      *
-     * @return StatHatInterface
+     * @return StatHatApiInterface
      */
     public function value($stat, $value, $timestamp = null)
     {

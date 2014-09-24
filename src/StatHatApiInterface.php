@@ -12,12 +12,12 @@
 namespace PradoDigital\StatHat;
 
 /**
- * StatHatInterface exposes the basic features of the StatHat API via the
+ * StatHatApiInterface exposes the basic features of the StatHat API via the
  * count and value methods.
  *
  * @author Jose Prado <cowlby@me.com>
  */
-interface StatHatInterface
+interface StatHatApiInterface
 {
     /**
      * Updates a counter stat.
@@ -26,7 +26,7 @@ interface StatHatInterface
      * @param int $count     The number to count, defaults to 1
      * @param int $timestamp Optional timestamp, defaults to time()
      *
-     * @return StatHatInterface
+     * @return StatHatApiInterface
      */
     public function count($stat, $count = 1, $timestamp = null);
 
@@ -37,7 +37,7 @@ interface StatHatInterface
      * @param int $value     The value to track
      * @param int $timestamp Optional timestamp, defaults to time()
      *
-     * @return StatHatInterface
+     * @return StatHatApiInterface
      */
     public function value($stat, $value, $timestamp = null);
 }
