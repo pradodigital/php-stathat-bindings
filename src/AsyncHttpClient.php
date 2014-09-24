@@ -32,7 +32,7 @@ class AsyncHttpClient implements HttpClientInterface
     public function post($path, array $params, $contentType = HttpClientInterface::DEFAULT_CONTENT_TYPE)
     {
         if (!in_array($contentType, ['application/json', 'application/x-www-form-urlencoded'])) {
-            throw new \RuntimeException('Invalid Content-Type set in HTTP Client.');
+            throw new \InvalidArgumentException('Invalid Content-Type set in HTTP Client.');
         }
 
         $body = $this->encodeParams($params, $contentType);

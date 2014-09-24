@@ -13,37 +13,69 @@ namespace PradoDigital\StatHat;
 
 use GuzzleHttp\ClientInterface;
 
-class StatHat implements StatHatApiInterface, StatHatJsonApiInterface
+class StatHat implements StatHatEzInterface, StatHatJsonInterface
 {
     private $buffer;
     private $client;
     private $accessToken;
     private $ezKey;
 
-    public function __construct(ClientInterface $client, $accessToken, $ezKey)
+    public function __construct(ClientInterface $client, $accessToken = null, $ezKey = null)
     {
-        $this->buffer = [];
         $this->client = $client;
-        $this->accessToken = $accessToken;
-        $this->ezKey = $ezKey;
+
+        if ($accessToken !== null) {
+            $this->setAccessToken($accessToken);
+        }
+
+        if ($ezKey !== null) {
+            $this->setEzKey($ezKey);
+        }
 
         register_shutdown_function([$this, 'postBatch']);
+
+        $this->resetBuffer();
     }
 
-    public function count($stat, $count = 1, $timestamp = null)
+    /**
+     * @see \PradoDigital\StatHat\StatHatJsonInterface::setAccessToken()
+     */
+    public function setAccessToken($accessToken)
     {
-        $this->buffer[] = ['stat' => $stat, 'count' => $count, 't' => $timestamp ?: time()];
+        $this->accessToken = $accessToken;
+    }
+
+    /**
+     * @see \PradoDigital\StatHat\StatHatEzInterface::setEzKey()
+     */
+    public function setEzKey($ezKey)
+    {
+        $this->ezKey = $ezKey;
+    }
+
+    /**
+     * @see \PradoDigital\StatHat\StatHatEzInterface::ezCount()
+     */
+    public function ezCount($stat, $count = 1, $timestamp = null)
+    {
+        $this->buffer[$this->ezKey][] = ['stat' => $stat, 'count' => $count, 't' => $timestamp ?: time()];
 
         return $this;
     }
 
-    public function value($stat, $value, $timestamp = null)
+    /**
+     * @see \PradoDigital\StatHat\StatHatEzInterface::ezValue()
+     */
+    public function ezValue($stat, $value, $timestamp = null)
     {
-        $this->buffer[] = ['stat' => $stat, 'value' => $value, 't' => $timestamp ?: time()];
+        $this->buffer[$this->ezKey][] = ['stat' => $stat, 'value' => $value, 't' => $timestamp ?: time()];
 
         return $this;
     }
 
+    /**
+     * @see \PradoDigital\StatHat\StatHatJsonInterface::getStatList()
+     */
     public function getStatList()
     {
         $url = sprintf('https://www.stathat.com/x/%s/statlist', $this->accessToken);
@@ -51,6 +83,9 @@ class StatHat implements StatHatApiInterface, StatHatJsonApiInterface
         return $response->json();
     }
 
+    /**
+     * @see \PradoDigital\StatHat\StatHatJsonInterface::getStat()
+     */
     public function getStat($name)
     {
         $url = sprintf('https://www.stathat.com/x/%s/stat', $this->accessToken);
@@ -60,24 +95,25 @@ class StatHat implements StatHatApiInterface, StatHatJsonApiInterface
 
     /**
      * Flushes the buffer by POSTing the stats in JSON format to Stat Hat.
-     *
-     * @return boolean
      */
     public function postBatch()
     {
-        if ($this->hasStats()) {
+        foreach ($this->buffer as $ezKey => $stats) {
 
-            $params = [
-                'ezkey' => $this->ezKey,
-                'data' => $this->buffer
-            ];
+            if (!empty($stats)) {
 
-            $response = $this->client->post('http://api.stathat.com/ez', [
-                'json' => $params
-            ]);
+                $params = [
+                    'ezkey' => $ezKey,
+                    'data' => $stats
+                ];
 
-            if ($response->getStatusCode() === '200') {
-                $this->clearBuffer();
+                $response = $this->client->post('https://api.stathat.com/ez', [
+                    'json' => $stats
+                ]);
+
+                if ($response->getStatusCode() === '200') {
+                    $this->clearBuffer($ezKey);
+                }
             }
         }
     }
@@ -85,22 +121,12 @@ class StatHat implements StatHatApiInterface, StatHatJsonApiInterface
     /**
      * Empties the buffer.
      *
-     * @return \PradoDigital\StatHat\StatHatEZ
+     * @return StatHat
      */
-    private function clearBuffer()
+    private function resetBuffer()
     {
         $this->buffer = [];
 
         return $this;
-    }
-
-    /**
-     * Checks whether or not there are stats to send.
-     *
-     * @return boolean
-     */
-    private function hasStats()
-    {
-        return count($this->buffer) > 0;
     }
 }

@@ -17,8 +17,15 @@ namespace PradoDigital\StatHat;
  *
  * @author Jose Prado <cowlby@me.com>
  */
-interface StatHatJsonApiInterface
+interface StatHatJsonInterface
 {
+    /**
+     * Sets the Access Token to use for requesting stats.
+     *
+     * @param string $accessToken
+     */
+    public function setAccessToken($accessToken);
+
     /**
      * Gets the list of Stats available.
      *

@@ -10,4 +10,3 @@
  */
 
 $autoloader = require __DIR__.'/../vendor/autoload.php';
-$autoloader->add('PradoDigital\\Tests\\StatHatEz', 'tests/');

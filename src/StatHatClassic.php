@@ -17,7 +17,7 @@ namespace PradoDigital\StatHat;
  *
  * @author Jose Prado <cowlby@me.com>
  */
-class StatHatClassic implements StatHatApiInterface
+class StatHatClassic implements StatHatClassicInterface
 {
     /**
      * The internal buffer of stats.
@@ -48,21 +48,24 @@ class StatHatClassic implements StatHatApiInterface
      */
     public function __construct(HttpClientInterface $client, $userKey)
     {
-        $this->buffer = ['counters' => [], 'values' => []];
         $this->client = $client;
-        $this->userKey = $userKey;
+        $this->setUserKey($userKey);
 
         register_shutdown_function([$this, 'postBatch']);
+
+        $this->resetBuffer();
+    }
+
+    /** (non-PHPdoc)
+     * @see \PradoDigital\StatHat\StatHatClassicInterface::setUserKey()
+     */
+    public function setUserKey($userKey)
+    {
+        $this->userKey = $userKey;
     }
 
     /**
-     * Queues an update to a counter stat.
-     *
-     * @param string $stat   The unique stat key
-     * @param int $count     The number to count
-     * @param int $timestamp Optional timestamp, defaults to time()
-     *
-     * @return StatHatApiInterface
+     * @see \PradoDigital\StatHat\StatHatClassicInterface::count()
      */
     public function count($stat, $count = 1, $timestamp = null)
     {
@@ -77,13 +80,7 @@ class StatHatClassic implements StatHatApiInterface
     }
 
     /**
-     * Queues an update to a value tracker.
-     *
-     * @param string $stat   The unique stat key
-     * @param int $value     The value to track
-     * @param int $timestamp Optional timestamp, defaults to time()
-     *
-     * @return StatHatApiInterface
+     * @see \PradoDigital\StatHat\StatHatClassicInterface::value()
      */
     public function value($stat, $value, $timestamp = null)
     {
@@ -99,8 +96,6 @@ class StatHatClassic implements StatHatApiInterface
 
     /**
      * Flushes the buffer by POSTing the stats in JSON format to Stat Hat.
-     *
-     * @return boolean
      */
     public function postBatch()
     {
@@ -114,18 +109,18 @@ class StatHatClassic implements StatHatApiInterface
                 $this->client->post('/v', $params);
             }
 
-            $this->clearBuffer();
+            $this->resetBuffer();
         }
     }
 
     /**
      * Empties the buffer.
      *
-     * @return \PradoDigital\StatHat\StatHatClassic
+     * @return StatHatClassic
      */
-    private function clearBuffer()
+    private function resetBuffer()
     {
-        $this->buffer = [];
+        $this->buffer = ['counters' => [], 'values' => []];
 
         return $this;
     }

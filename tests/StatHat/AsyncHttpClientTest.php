@@ -4,7 +4,7 @@ namespace PradoDigital\Tests\StatHat;
 
 use PradoDigital\StatHat\AsyncHttpClient;
 
-require_once __DIR__.'/../../../mocks.php';
+require_once __DIR__.'/../mocks.php';
 
 class AsyncHttpClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,20 +26,34 @@ class AsyncHttpClientTest extends \PHPUnit_Framework_TestCase
         $this->client = null;
     }
 
-    public function testPost()
+    public function testPostDefault()
     {
-        $expectedRequest = $this->mockRequestContents('{"key":"value"}');
+        $expectedRequest = $this->mockRequestContents('key=value', 'application/x-www-form-urlencoded');
         $this->client->post('/', array('key' => 'value'));
-        $actualRequest = file_get_contents(__DIR__.'/../../../socket_mock_contents.txt');
+        $actualRequest = file_get_contents(__DIR__.'/../socket_mock_contents.txt');
         $this->assertEquals($expectedRequest, $actualRequest);
     }
 
-    private function mockRequestContents($body)
+    public function testPostJson()
+    {
+        $expectedRequest = $this->mockRequestContents('{"key":"value"}', 'application/json');
+        $this->client->post('/', array('key' => 'value'), 'application/json');
+        $actualRequest = file_get_contents(__DIR__.'/../socket_mock_contents.txt');
+        $this->assertEquals($expectedRequest, $actualRequest);
+    }
+
+    public function testInvalidContentType()
+    {
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->client->post('/', array('key' => 'value'), 'application/moo');
+    }
+
+    private function mockRequestContents($body, $contentType)
     {
         $request  = "POST / HTTP/1.1\r\n";
         $request .= "Host: api.stathat.com\r\n";
         $request .= "User-Agent: PHP StatHat Bindings/1.x (+https://github.com/pradodigital/php-stathat-bindings)\r\n";
-        $request .= "Content-Type: application/json\r\n";
+        $request .= "Content-Type: ".$contentType."\r\n";
         $request .= "Content-Length: ".strlen($body)."\r\n";
         $request .= "Connection: Close\r\n";
         $request .= "\r\n";
